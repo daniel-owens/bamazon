@@ -65,7 +65,7 @@ function checkInventory() {
   connection.query("SELECT product_name, price, stock_quantity FROM products WHERE ?", { item_id: userIdNumber }, function(err, res) {
     if (err) throw err;
     if (userQuantity < res[0].stock_quantity) {
-      updateInventory();
+      updateInventory(userQuantity, res[0].stock_quantity, userIdNumber);
     } else {
       console.log("Sorry chump - you're outta luck.");
       start();
@@ -74,8 +74,12 @@ function checkInventory() {
   })
 }
 
-function updateInventory() {
-  
+function updateInventory(purchaseQuantity, stockQuantity, productId) {
+	connection.query("UPDATE products SET ? WHERE ?", [{ stock_quantity: stockQuantity - purchaseQuantity }, { item_id: productId }], function(err, res) {
+		if (err) return console.log(err)
+		console.log(res);
+		start();
+	})
 }
 
 
